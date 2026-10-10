@@ -30,6 +30,8 @@ builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<ITaxiCompanyService, TaxiCompanyService>();
 builder.Services.AddScoped<IDriverService, DriverService>();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
+builder.Services.AddScoped<ITripService, TripService>();
+builder.Services.AddScoped<IDriverTripService, DriverTripService>();
 
 // Rate limiting
 builder.Services.AddRateLimiter(options =>

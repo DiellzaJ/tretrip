@@ -20,6 +20,69 @@ public class PendingTripAssignmentService
         _notificationService = notificationService;
         _realtimeSender = realtimeSender;
     }
+    public async Task<int> ExpirePendingTripsAsync(
+        CancellationToken cancellationToken = default)
+    {
+        await using var transaction =
+            await _db.Database.BeginTransactionAsync(
+                cancellationToken);
+
+        // Use the same lock as trip assignment.
+        await _db.Database.ExecuteSqlRawAsync(
+            "SELECT pg_advisory_xact_lock(774411);",
+            cancellationToken);
+
+        var now = DateTime.UtcNow;
+
+        // Find Pending trips whose departure time has passed.
+        var expiredTrips = await _db.Trips
+            .Where(t =>
+                t.Status == "Pending" &&
+                t.ScheduledAt <= now)
+            .OrderBy(t => t.Id)
+            .ToListAsync(cancellationToken);
+
+        if (expiredTrips.Count == 0)
+            return 0;
+
+        // Mark expired trips.
+        foreach (var trip in expiredTrips)
+        {
+            trip.Status = "Expired";
+        }
+
+        await _db.SaveChangesAsync(cancellationToken);
+
+        // Create notifications for affected schedulers.
+        foreach (var trip in expiredTrips)
+        {
+            var message =
+                $"Your trip #{trip.Id} scheduled for " +
+                $"{trip.ScheduledAt:yyyy-MM-dd HH:mm} UTC " +
+                "has expired because no driver was assigned.";
+
+            await _notificationService.CreateAsync(
+                trip.SchedulerId,
+                trip.Id,
+                message);
+        }
+
+        // Persist the changes before sending SignalR events.
+        await transaction.CommitAsync(cancellationToken);
+
+        // Notify affected schedulers in real time.
+        var schedulerIds = expiredTrips
+            .Select(t => t.SchedulerId)
+            .Distinct();
+
+        foreach (var schedulerId in schedulerIds)
+        {
+            await _realtimeSender.NotifyUserAsync(
+                schedulerId);
+        }
+
+        return expiredTrips.Count;
+    }
 
     public async Task<int> AssignPendingTripsAsync(
         CancellationToken cancellationToken = default)

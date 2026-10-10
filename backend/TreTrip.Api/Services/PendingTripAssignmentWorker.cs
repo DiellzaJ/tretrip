@@ -51,13 +51,28 @@ public sealed class PendingTripAssignmentWorker : BackgroundService
             await using var scope =
                 _scopeFactory.CreateAsyncScope();
 
+
             var assignmentService =
                 scope.ServiceProvider.GetRequiredService<
                     IPendingTripAssignmentService>();
 
+            // First expire outdated Pending trips.
+            var expiredCount =
+                await assignmentService.ExpirePendingTripsAsync(
+                    cancellationToken);
+
+            if (expiredCount > 0)
+            {
+                _logger.LogInformation(
+                    "Automatically expired {Count} pending trips.",
+                    expiredCount);
+            }
+
+            // Then assign remaining eligible Pending trips.
             var assignedCount =
                 await assignmentService.AssignPendingTripsAsync(
                     cancellationToken);
+
 
             if (assignedCount > 0)
             {

@@ -10,17 +10,18 @@ public class TripService : ITripService
 {
     private readonly AppDbContext _db;
     private readonly INotificationService _notificationService;
-
+    private readonly INotificationRealtimeSender _realtimeSender;
     private const int BufferMinutes = 15;
 
     public TripService(
         AppDbContext db,
-        INotificationService notificationService)
+        INotificationService notificationService,
+        INotificationRealtimeSender realtimeSender)
     {
         _db = db;
         _notificationService = notificationService;
+        _realtimeSender = realtimeSender;
     }
-
 
     public async Task<TripResponseDto> CreateAsync(
         int schedulerId,
@@ -270,12 +271,15 @@ public class TripService : ITripService
         await _db.SaveChangesAsync();
 
         // Notify the driver when a trip is assigned
+        int? driverUserIdToNotify = null;
         if (trip.DriverId.HasValue)
         {
             var driverUserId = await _db.Drivers
                 .Where(d => d.Id == trip.DriverId.Value)
                 .Select(d => d.UserId)
                 .SingleAsync();
+
+            driverUserIdToNotify = driverUserId;
 
             var message =
                 $"New trip assigned! " +
@@ -292,6 +296,12 @@ public class TripService : ITripService
 
         await transaction.CommitAsync();
 
+        // Send real-time event only after successful commit
+        if (driverUserIdToNotify.HasValue)
+        {
+            await _realtimeSender.NotifyUserAsync(
+                driverUserIdToNotify.Value);
+        }
 
         var result = await GetByIdAsync(trip.Id, schedulerId);
 

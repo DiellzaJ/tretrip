@@ -10,10 +10,12 @@ using TreTrip.Api.Data;
 using TreTrip.Api.Interfaces;
 using TreTrip.Api.Models;
 using TreTrip.Api.Services;
+using TreTrip.Api.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.Services.AddSignalR();
 
 // Database
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -33,6 +35,7 @@ builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddScoped<ITripService, TripService>();
 builder.Services.AddScoped<IDriverTripService, DriverTripService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<INotificationRealtimeSender, NotificationRealtimeSender>();
 
 // Rate limiting
 builder.Services.AddRateLimiter(options =>
@@ -84,6 +87,25 @@ builder.Services.AddAuthentication(
     {
         options.MapInboundClaims = true;
 
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken =
+                    context.Request.Query["access_token"];
+
+                var path = context.HttpContext.Request.Path;
+
+                if (!string.IsNullOrEmpty(accessToken) &&
+                    path.StartsWithSegments("/hubs/notifications"))
+                {
+                    context.Token = accessToken;
+                }
+
+                return Task.CompletedTask;
+            }
+        };
+
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -131,5 +153,7 @@ app.UseAuthorization();
 
 // API endpoints
 app.MapControllers();
+
+app.MapHub<NotificationHub>("/hubs/notifications");
 
 app.Run();

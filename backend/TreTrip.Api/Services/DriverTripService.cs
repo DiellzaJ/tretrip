@@ -11,15 +11,17 @@ public class DriverTripService : IDriverTripService
 
     private readonly AppDbContext _db;
     private readonly INotificationService _notificationService;
-
+    private readonly INotificationRealtimeSender _realtimeSender;
     private const int EarlyStartMinutes = 15;
 
     public DriverTripService(
         AppDbContext db,
-        INotificationService notificationService)
+        INotificationService notificationService,
+        INotificationRealtimeSender realtimeSender)
     {
         _db = db;
         _notificationService = notificationService;
+        _realtimeSender = realtimeSender;
     }
 
     // Get trips assigned to the logged-in driver
@@ -144,6 +146,10 @@ public class DriverTripService : IDriverTripService
         );
 
         await transaction.CommitAsync();
+
+        // Notify the employee in real time
+        await _realtimeSender.NotifyUserAsync(
+            trip.SchedulerId);
 
         return DriverTripActionResult.Success;
     }

@@ -36,6 +36,8 @@ builder.Services.AddScoped<ITripService, TripService>();
 builder.Services.AddScoped<IDriverTripService, DriverTripService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<INotificationRealtimeSender, NotificationRealtimeSender>();
+builder.Services.AddScoped<IPendingTripAssignmentService, PendingTripAssignmentService>();
+builder.Services.AddHostedService<PendingTripAssignmentWorker>();
 
 // Rate limiting
 builder.Services.AddRateLimiter(options =>

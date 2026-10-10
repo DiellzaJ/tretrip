@@ -11,7 +11,7 @@ public class TripService : ITripService
     private readonly AppDbContext _db;
     private readonly INotificationService _notificationService;
     private readonly INotificationRealtimeSender _realtimeSender;
-    private const int BufferMinutes = 15;
+    private const int BufferMinutes = TripConflictChecker.BufferMinutes;
 
     public TripService(
         AppDbContext db,
@@ -174,38 +174,16 @@ public class TripService : ITripService
         // Find trips that conflict with the requested time
         var now = DateTime.UtcNow;
 
+
         var conflictingTrips = existingTrips
-            .Where(t =>
-            {
-                var occupiedFrom = t.ScheduledAt;
-
-                var occupiedUntil =
-                    t.ScheduledAt.AddMinutes(
-                        t.EstimatedDurationMinutes +
-                        BufferMinutes);
-
-                // Trips already active may take longer
-                // than their original estimated duration.
-                if (t.Status == "Arrived" ||
-                    t.Status == "InProgress")
-                {
-                    if (now < occupiedFrom)
-                        occupiedFrom = now;
-
-                    var estimatedRemainingEnd =
-                        now.AddMinutes(
-                            t.EstimatedDurationMinutes +
-                            BufferMinutes);
-
-                    if (estimatedRemainingEnd > occupiedUntil)
-                        occupiedUntil = estimatedRemainingEnd;
-                }
-
-                return occupiedFrom < tripEnd &&
-                       occupiedUntil > scheduledAt;
-            })
+            .Where(t => TripConflictChecker.Overlaps(
+                t.ScheduledAt,
+                t.EstimatedDurationMinutes,
+                t.Status,
+                scheduledAt,
+                tripEnd,
+                now))
             .ToList();
-
 
         int? assignedDriverId = null;
         int? assignedVehicleId = null;

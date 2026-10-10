@@ -19,4 +19,8 @@ public class User
     public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 
     public Driver? DriverProfile { get; set; }
+
+    public int FailedLoginAttempts { get; set; } = 0;
+    public DateTime? LockoutEnd { get; set; }
+    public DateTime? LastFailedLoginAt { get; set; }
 }

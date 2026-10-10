@@ -29,6 +29,7 @@ builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<ITaxiCompanyService, TaxiCompanyService>();
 builder.Services.AddScoped<IDriverService, DriverService>();
+builder.Services.AddScoped<IVehicleService, VehicleService>();
 
 // Rate limiting
 builder.Services.AddRateLimiter(options =>

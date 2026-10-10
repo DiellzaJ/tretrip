@@ -14,18 +14,23 @@ public class AdminController : ControllerBase
 {
     private readonly IAdminService _adminService;
     private readonly ITaxiCompanyService _taxiCompanyService;
-     private readonly IDriverService _driverService;
+    private readonly IDriverService _driverService;
+    private readonly IVehicleService _vehicleService;
+
 
 
     public AdminController(
         IAdminService adminService,
         ITaxiCompanyService taxiCompanyService,
-        IDriverService driverService)
+        IDriverService driverService,
+        IVehicleService vehicleService)
     {
         _adminService = adminService;
         _taxiCompanyService = taxiCompanyService;
         _driverService = driverService;
+        _vehicleService = vehicleService;
     }
+
 
 
     // Test Admin authorization
@@ -205,6 +210,76 @@ public class AdminController : ControllerBase
         {
             message = "Driver availability updated successfully.",
             driverId,
+            isAvailable = request.IsAvailable.Value
+        });
+    }
+
+
+    // Create a new vehicle
+    [HttpPost("vehicles")]
+    public async Task<ActionResult<VehicleResponseDto>> CreateVehicle(
+        [FromBody] CreateVehicleDto request)
+    {
+        try
+        {
+            var vehicle = await _vehicleService.CreateAsync(request);
+
+            return StatusCode(201, vehicle);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+            when (ex.Message ==
+                "A vehicle with this plate number already exists.")
+        {
+            return Conflict(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+            when (ex.Message ==
+                "Taxi company is inactive or contract is not valid.")
+        {
+            return Conflict(new { message = ex.Message });
+        }
+    }
+
+    // Get all registered vehicles
+    [HttpGet("vehicles")]
+    public async Task<ActionResult<List<VehicleResponseDto>>> GetVehicles()
+    {
+        var vehicles = await _vehicleService.GetAllAsync();
+
+        return Ok(vehicles);
+    }
+
+    // Update vehicle availability
+    [HttpPatch("vehicles/{vehicleId:int}/availability")]
+    public async Task<IActionResult> UpdateVehicleAvailability(
+        int vehicleId,
+        [FromBody] UpdateVehicleAvailabilityDto request)
+    {
+        var success = await _vehicleService.SetAvailabilityAsync(
+            vehicleId,
+            request.IsAvailable!.Value
+        );
+
+        if (!success)
+        {
+            return BadRequest(new
+            {
+                message = "Vehicle not found or availability change is not allowed."
+            });
+        }
+
+        return Ok(new
+        {
+            message = "Vehicle availability updated successfully.",
+            vehicleId,
             isAvailable = request.IsAvailable.Value
         });
     }

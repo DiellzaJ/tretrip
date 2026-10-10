@@ -13,11 +13,20 @@ namespace TreTrip.Api.Controllers;
 public class AdminController : ControllerBase
 {
     private readonly IAdminService _adminService;
+    private readonly ITaxiCompanyService _taxiCompanyService;
+     private readonly IDriverService _driverService;
 
-    public AdminController(IAdminService adminService)
+
+    public AdminController(
+        IAdminService adminService,
+        ITaxiCompanyService taxiCompanyService,
+        IDriverService driverService)
     {
         _adminService = adminService;
+        _taxiCompanyService = taxiCompanyService;
+        _driverService = driverService;
     }
+
 
     // Test Admin authorization
     [HttpGet("test")]
@@ -96,4 +105,108 @@ public class AdminController : ControllerBase
             isActive = request.IsActive.Value
         });
     }
-}
+
+        // Create a taxi company
+        [HttpPost("taxi-companies")]
+        public async Task<ActionResult<TaxiCompanyResponseDto>>
+            CreateTaxiCompany(
+                [FromBody] CreateTaxiCompanyDto request)
+        {
+            try
+            {
+                var company = await _taxiCompanyService
+                    .CreateAsync(request);
+
+                return StatusCode(201, company);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        // Get all taxi companies
+        [HttpGet("taxi-companies")]
+        public async Task<ActionResult<List<TaxiCompanyResponseDto>>>
+            GetTaxiCompanies()
+        {
+            var companies = await _taxiCompanyService
+                .GetAllAsync();
+
+            return Ok(companies);
+        }
+
+
+    // Create a new driver
+    [HttpPost("drivers")]
+    public async Task<ActionResult<DriverResponseDto>> CreateDriver(
+        [FromBody] CreateDriverDto request)
+    {
+        try
+        {
+            var driver = await _driverService.CreateAsync(request);
+
+            return StatusCode(201, driver);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+            when (ex.Message ==
+                "A user with this email already exists." ||
+                ex.Message ==
+                "A driver with this license already exists.")
+        {
+            return Conflict(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+            when (ex.Message ==
+                "Taxi company is inactive or contract is not valid.")
+        {
+            return Conflict(new { message = ex.Message });
+        }
+    }
+
+    // Get all drivers
+    [HttpGet("drivers")]
+    public async Task<ActionResult<List<DriverResponseDto>>>
+        GetDrivers()
+    {
+        var drivers = await _driverService.GetAllAsync();
+
+        return Ok(drivers);
+    }
+
+    // Update driver availability
+    [HttpPatch("drivers/{driverId:int}/availability")]
+    public async Task<IActionResult> UpdateDriverAvailability(
+        int driverId,
+        [FromBody] UpdateDriverAvailabilityDto request)
+    {
+        var success = await _driverService.SetAvailabilityAsync(
+            driverId,
+            request.IsAvailable!.Value
+        );
+
+        if (!success)
+        {
+            return BadRequest(new
+            {
+                message = "Driver not found or availability change is not allowed."
+            });
+        }
+
+        return Ok(new
+        {
+            message = "Driver availability updated successfully.",
+            driverId,
+            isAvailable = request.IsAvailable.Value
+        });
+    }
+
+    }

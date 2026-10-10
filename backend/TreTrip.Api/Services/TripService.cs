@@ -382,9 +382,9 @@ public class TripService : ITripService
             return CancelTripResult.NotFound;
         }
 
-        if ((trip.Status != "Pending" &&
-            trip.Status != "Assigned") ||
-            trip.StartedAt.HasValue)
+        if (!TripLifecycleRules.CanCancel(
+            trip.Status,
+            trip.StartedAt))
         {
             return CancelTripResult.InvalidStatus;
         }

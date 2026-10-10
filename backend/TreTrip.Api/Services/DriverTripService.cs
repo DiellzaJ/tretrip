@@ -103,8 +103,9 @@ public class DriverTripService : IDriverTripService
         }
 
         // Only an assigned trip can be marked as arrived
-        if (trip.Status != "Assigned" ||
-            trip.StartedAt.HasValue)
+        if (!TripLifecycleRules.CanArrive(
+            trip.Status,
+            trip.StartedAt))
         {
             return DriverTripActionResult.InvalidStatus;
         }
@@ -182,9 +183,11 @@ public class DriverTripService : IDriverTripService
         }
 
         // Only assigned trips can be started
-       if ((trip.Status != "Assigned" &&
-        trip.Status != "Arrived") ||
-        trip.StartedAt.HasValue)
+
+        if (!TripLifecycleRules.CanStart(
+            trip.Status,
+            trip.StartedAt))
+
         {
             return DriverTripActionResult.InvalidStatus;
         }
@@ -260,9 +263,11 @@ public class DriverTripService : IDriverTripService
         }
 
         // Only ongoing trips can be completed
-        if (trip.Status != "InProgress" ||
-            !trip.StartedAt.HasValue ||
-            trip.CompletedAt.HasValue)
+
+        if (!TripLifecycleRules.CanComplete(
+            trip.Status,
+            trip.StartedAt,
+            trip.CompletedAt))
         {
             return DriverTripActionResult.InvalidStatus;
         }

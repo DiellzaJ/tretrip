@@ -135,4 +135,52 @@ public class DriverTripsController : ControllerBase
             status = "Completed"
         });
     }
+    // Driver confirms arrival at pickup location
+    [HttpPatch("{id:int}/arrived")]
+    public async Task<IActionResult> MarkArrived(int id)
+    {
+        var driverUserId = GetDriverUserId();
+
+        if (!driverUserId.HasValue)
+        {
+            return Unauthorized();
+        }
+
+        var result = await _driverTripService.ArriveAsync(
+            id,
+            driverUserId.Value
+        );
+
+        if (result == DriverTripActionResult.NotFound)
+        {
+            return NotFound(new
+            {
+                message = "Trip not found or not assigned to you."
+            });
+        }
+
+        if (result == DriverTripActionResult.TooEarly)
+        {
+            return Conflict(new
+            {
+                message = "Arrival cannot be reported more than 30 minutes early."
+            });
+        }
+
+        if (result == DriverTripActionResult.InvalidStatus)
+        {
+            return Conflict(new
+            {
+                message = "Trip cannot be marked as arrived in its current state."
+            });
+        }
+
+        return Ok(new
+        {
+            message = "Arrival confirmed. Employee notified.",
+            tripId = id,
+            status = "Arrived"
+        });
+    }
+
 }

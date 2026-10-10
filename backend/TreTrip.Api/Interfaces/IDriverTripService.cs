@@ -15,7 +15,10 @@ public interface IDriverTripService
     // Get trips assigned to the logged-in driver
     Task<List<TripResponseDto>> GetMyTripsAsync(
         int driverUserId);
-
+// Driver confirms arrival at pickup location
+    Task<DriverTripActionResult> ArriveAsync(
+        int tripId,
+        int driverUserId);
     // Start an assigned trip
     Task<DriverTripActionResult> StartAsync(
         int tripId,

@@ -8,13 +8,18 @@ namespace TreTrip.Api.Services;
 
 public class DriverTripService : IDriverTripService
 {
+
     private readonly AppDbContext _db;
+    private readonly INotificationService _notificationService;
 
     private const int EarlyStartMinutes = 15;
 
-    public DriverTripService(AppDbContext db)
+    public DriverTripService(
+        AppDbContext db,
+        INotificationService notificationService)
     {
         _db = db;
+        _notificationService = notificationService;
     }
 
     // Get trips assigned to the logged-in driver
@@ -69,6 +74,80 @@ public class DriverTripService : IDriverTripService
         }).ToList();
     }
 
+// Driver confirms arrival at pickup location
+    public async Task<DriverTripActionResult> ArriveAsync(
+        int tripId,
+        int driverUserId)
+    {
+        await using var transaction =
+            await _db.Database.BeginTransactionAsync();
+
+        // Coordinate with trip assignment and cancellation
+        await _db.Database.ExecuteSqlRawAsync(
+            "SELECT pg_advisory_xact_lock(774411);");
+
+        var trip = await _db.Trips
+            .Include(t => t.Driver)
+                .ThenInclude(d => d!.User)
+            .Include(t => t.Vehicle)
+            .FirstOrDefaultAsync(t =>
+                t.Id == tripId &&
+                t.Driver != null &&
+                t.Driver.UserId == driverUserId);
+
+        if (trip == null)
+        {
+            return DriverTripActionResult.NotFound;
+        }
+
+        // Only an assigned trip can be marked as arrived
+        if (trip.Status != "Assigned" ||
+            trip.StartedAt.HasValue)
+        {
+            return DriverTripActionResult.InvalidStatus;
+        }
+
+        // Avoid reporting arrival too far in advance
+        if (DateTime.UtcNow <
+            trip.ScheduledAt.AddMinutes(-30))
+        {
+            return DriverTripActionResult.TooEarly;
+        }
+
+        // Validate the driver account
+        if (trip.Driver == null ||
+            !trip.Driver.IsActive ||
+            !trip.Driver.User.IsActive)
+        {
+            return DriverTripActionResult.InvalidStatus;
+        }
+
+        trip.Status = "Arrived";
+
+        await _db.SaveChangesAsync();
+
+        // Notify the employee who booked the taxi
+        var driverName = trip.Driver.User.FullName;
+        var plateNumber =
+            trip.Vehicle?.PlateNumber ?? "Not available";
+
+        var message =
+            $"Your taxi has arrived! " +
+            $"Driver: {driverName}. " +
+            $"Vehicle: {plateNumber}. " +
+            $"Pickup: {trip.PickupAddress}.";
+
+        await _notificationService.CreateAsync(
+            trip.SchedulerId,
+            trip.Id,
+            message
+        );
+
+        await transaction.CommitAsync();
+
+        return DriverTripActionResult.Success;
+    }
+
     // Start an assigned trip
     public async Task<DriverTripActionResult> StartAsync(
         int tripId,
@@ -97,8 +176,9 @@ public class DriverTripService : IDriverTripService
         }
 
         // Only assigned trips can be started
-        if (trip.Status != "Assigned" ||
-            trip.StartedAt.HasValue)
+       if ((trip.Status != "Assigned" &&
+        trip.Status != "Arrived") ||
+        trip.StartedAt.HasValue)
         {
             return DriverTripActionResult.InvalidStatus;
         }

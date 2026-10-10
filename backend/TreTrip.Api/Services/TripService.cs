@@ -9,13 +9,18 @@ namespace TreTrip.Api.Services;
 public class TripService : ITripService
 {
     private readonly AppDbContext _db;
+    private readonly INotificationService _notificationService;
 
     private const int BufferMinutes = 15;
 
-    public TripService(AppDbContext db)
+    public TripService(
+        AppDbContext db,
+        INotificationService notificationService)
     {
         _db = db;
+        _notificationService = notificationService;
     }
+
 
     public async Task<TripResponseDto> CreateAsync(
         int schedulerId,
@@ -154,6 +159,7 @@ public class TripService : ITripService
             .AsNoTracking()
             .Where(t =>
                 t.Status == "Assigned" ||
+                t.Status == "Arrived" ||
                 t.Status == "InProgress")
             .Select(t => new
             {
@@ -164,6 +170,41 @@ public class TripService : ITripService
                 t.Status
             })
             .ToListAsync();
+        // Find trips that conflict with the requested time
+        var now = DateTime.UtcNow;
+
+        var conflictingTrips = existingTrips
+            .Where(t =>
+            {
+                var occupiedFrom = t.ScheduledAt;
+
+                var occupiedUntil =
+                    t.ScheduledAt.AddMinutes(
+                        t.EstimatedDurationMinutes +
+                        BufferMinutes);
+
+                // Trips already active may take longer
+                // than their original estimated duration.
+                if (t.Status == "Arrived" ||
+                    t.Status == "InProgress")
+                {
+                    if (now < occupiedFrom)
+                        occupiedFrom = now;
+
+                    var estimatedRemainingEnd =
+                        now.AddMinutes(
+                            t.EstimatedDurationMinutes +
+                            BufferMinutes);
+
+                    if (estimatedRemainingEnd > occupiedUntil)
+                        occupiedUntil = estimatedRemainingEnd;
+                }
+
+                return occupiedFrom < tripEnd &&
+                       occupiedUntil > scheduledAt;
+            })
+            .ToList();
+
 
         int? assignedDriverId = null;
         int? assignedVehicleId = null;
@@ -171,26 +212,20 @@ public class TripService : ITripService
 
         foreach (var driver in drivers)
         {
-            var driverBusy = existingTrips.Any(t =>
-                t.DriverId == driver.Id &&
-                (t.Status == "InProgress" ||
-                 (t.ScheduledAt < tripEnd &&
-                  t.ScheduledAt.AddMinutes(
-                      t.EstimatedDurationMinutes +
-                      BufferMinutes) > scheduledAt)));
+
+            var driverBusy = conflictingTrips.Any(t =>
+                t.DriverId == driver.Id);
+
 
             if (driverBusy)
                 continue;
 
+
             var vehicle = vehicles.FirstOrDefault(v =>
                 v.TaxiCompanyId == driver.TaxiCompanyId &&
-                !existingTrips.Any(t =>
-                    t.VehicleId == v.Id &&
-                    (t.Status == "InProgress" ||
-                     (t.ScheduledAt < tripEnd &&
-                      t.ScheduledAt.AddMinutes(
-                          t.EstimatedDurationMinutes +
-                          BufferMinutes) > scheduledAt))));
+                !conflictingTrips.Any(t =>
+                    t.VehicleId == v.Id));
+
 
             if (vehicle == null)
                 continue;
@@ -234,7 +269,29 @@ public class TripService : ITripService
         _db.Trips.Add(trip);
         await _db.SaveChangesAsync();
 
+        // Notify the driver when a trip is assigned
+        if (trip.DriverId.HasValue)
+        {
+            var driverUserId = await _db.Drivers
+                .Where(d => d.Id == trip.DriverId.Value)
+                .Select(d => d.UserId)
+                .SingleAsync();
+
+            var message =
+                $"New trip assigned! " +
+                $"Pickup: {trip.PickupAddress}. " +
+                $"Destination: {trip.DestinationAddress}. " +
+                $"Departure (UTC): {trip.ScheduledAt:yyyy-MM-dd HH:mm}.";
+
+            await _notificationService.CreateAsync(
+                driverUserId,
+                trip.Id,
+                message
+            );
+        }
+
         await transaction.CommitAsync();
+
 
         var result = await GetByIdAsync(trip.Id, schedulerId);
 

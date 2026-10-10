@@ -1,0 +1,65 @@
+# --------------------------------------------------
+# TreTrip — React / Vite + ASP.NET Core / .NET
+# --------------------------------------------------
+
+# Node.js and frontend build output
+node_modules/
+dist/
+build/
+.vite/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# .NET build output
+[Bb]in/
+[Oo]bj/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Tests and coverage
+TestResults/
+coverage/
+coverage-*/
+*.coverage
+*.coveragexml
+
+# Environment files and local settings
+.env
+.env.*
+!.env.example
+!.env.sample
+appsettings.Local.json
+appsettings.*.Local.json
+appsettings.Development.json
+
+# Local development databases (SQLite)
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# Secrets and certificates
+secrets.json
+*.pfx
+*.p12
+*.key
+
+# IDE and operating system files
+.idea/
+.vscode/*.log
+.DS_Store
+Thumbs.db
+
+# Local AI tool settings (keep shared project guidance tracked)
+.claude/settings.local.json
+
+# Miscellaneous
+*.log
+*.tmp

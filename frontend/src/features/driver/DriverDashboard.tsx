@@ -7,6 +7,7 @@ import type { LoginResponse } from "../../api/client";
 import type { Trip } from "../scheduler/tripsApi";
 import { getDriverTrips, updateDriverTrip, type DriverAction } from "./driverApi";
 import { useTripUpdates } from "../../realtime/useTripUpdates";
+import NotificationsBell from "../notifications/NotificationsBell";
 import "./driver.css";
 
 function Brand() {
@@ -31,6 +32,7 @@ export default function DriverDashboard({ user, onLogout }: {
   onLogout: () => void;
 }) {
   const [trips, setTrips] = useState<Trip[]>([]);
+  const [notificationsRevision, setNotificationsRevision] = useState(0);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [busyTripId, setBusyTripId] = useState<number | null>(null);
@@ -60,7 +62,10 @@ export default function DriverDashboard({ user, onLogout }: {
     return () => { window.clearInterval(poll); window.clearInterval(clock); };
   }, [refreshTrips]);
 
-  const liveConnected = useTripUpdates(user.accessToken, refreshTrips);
+  const onNotificationsUpdated = useCallback(() => {
+    setNotificationsRevision(previous => previous + 1);
+  }, []);
+  const liveConnected = useTripUpdates(user.accessToken, refreshTrips, onNotificationsUpdated);
 
   const currentTrips = useMemo(() => trips
     .filter(trip => ["Assigned", "Arrived", "InProgress"].includes(trip.status))
@@ -94,6 +99,7 @@ export default function DriverDashboard({ user, onLogout }: {
         <Brand />
         <div className="tt-header-actions">
           <span className="tt-header-role">DRIVER WORKSPACE</span>
+          <NotificationsBell accessToken={user.accessToken} refreshVersion={notificationsRevision} />
           <span className="tt-user-avatar" aria-label={user.fullName}>{firstName.charAt(0).toUpperCase()}</span>
           <button type="button" className="tt-logout" onClick={onLogout}><LogOut size={16}/> <span>Log out</span></button>
         </div>

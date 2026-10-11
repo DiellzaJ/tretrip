@@ -11,6 +11,7 @@ import { API_BASE_URL } from "../api/client";
 export function useTripUpdates(
   accessToken: string,
   refreshTrips: () => void | Promise<unknown>,
+  onNotificationsUpdated?: () => void,
 ): boolean {
   const [connected, setConnected] = useState(false);
 
@@ -26,7 +27,11 @@ export function useTripUpdates(
       .configureLogging(LogLevel.Warning)
       .build();
 
-    const refresh = () => { if (mounted) void refreshTrips(); };
+    const refresh = () => {
+      if (!mounted) return;
+      void refreshTrips();
+      onNotificationsUpdated?.();
+    };
     const scheduleRetry = () => {
       if (!mounted || retryTimer !== undefined) return;
       retryTimer = setTimeout(() => {
@@ -73,7 +78,7 @@ export function useTripUpdates(
       connection.off("NotificationsUpdated", refresh);
       void connection.stop();
     };
-  }, [accessToken, refreshTrips]);
+  }, [accessToken, refreshTrips, onNotificationsUpdated]);
 
   return connected;
 }

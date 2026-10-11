@@ -8,6 +8,7 @@ import {
 import type { LoginResponse } from "../../api/client";
 import { cancelTrip, createTrip, getMyTrips, type Trip } from "./tripsApi";
 import { useTripUpdates } from "../../realtime/useTripUpdates";
+import NotificationsBell from "../notifications/NotificationsBell";
 import "./scheduler.css";
 
 type Point = { lat: number; lng: number };
@@ -117,6 +118,7 @@ export default function SchedulerDashboard({ user, onLogout }: {
   onLogout: () => void;
 }) {
   const [trips, setTrips] = useState<Trip[]>([]);
+  const [notificationsRevision, setNotificationsRevision] = useState(0);
   const [loadingTrips, setLoadingTrips] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [bookingOpen, setBookingOpen] = useState(false);
@@ -150,7 +152,10 @@ export default function SchedulerDashboard({ user, onLogout }: {
     return () => window.clearInterval(interval);
   }, [refreshTrips]);
 
-  const liveConnected = useTripUpdates(user.accessToken, refreshTrips);
+  const onNotificationsUpdated = useCallback(() => {
+    setNotificationsRevision(previous => previous + 1);
+  }, []);
+  const liveConnected = useTripUpdates(user.accessToken, refreshTrips, onNotificationsUpdated);
 
   const onMapPick = useCallback((point: Point, type: PinType) => {
     const coords = `${point.lat.toFixed(5)}, ${point.lng.toFixed(5)}`;
@@ -239,6 +244,7 @@ export default function SchedulerDashboard({ user, onLogout }: {
         <Brand />
         <div className="tt-header-actions">
           <span className="tt-header-role">SCHEDULER WORKSPACE</span>
+          <NotificationsBell accessToken={user.accessToken} refreshVersion={notificationsRevision} />
           <span className="tt-user-avatar">{user.fullName.trim().charAt(0).toUpperCase() || "T"}</span>
           <button type="button" className="tt-logout" onClick={onLogout}><LogOut size={16}/> <span>Log out</span></button>
         </div>

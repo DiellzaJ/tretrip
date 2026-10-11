@@ -1,0 +1,128 @@
+/* TreTrip's shared, account-specific notification drawer (Scheduler + Driver). */
+.tt-notify-anchor { position: relative; display: flex; align-items: center; z-index: 1200; }
+.tt-notify-trigger { position: relative; width: 43px; height: 43px; display: grid; place-items: center; border: 1px solid #dfe5db; border-radius: 50%; color: #192019; background: #fff; cursor: pointer; flex-shrink: 0; }
+.tt-notify-trigger:hover, .tt-notify-trigger--open { background: #f2f8e9; border-color: #b9d99a; }
+.tt-notify-badge { position: absolute; top: -5px; right: -7px; min-width: 19px; height: 19px; display: flex; align-items: center; justify-content: center; padding: 0 4px; border-radius: 20px; background: #cbff79; color: #1a2418; font-size: 10px; font-weight: 800; border: 2px solid #fff; }
+.tt-notify-panel { position: absolute; right: 0; top: calc(100% + 15px); width: min(400px, calc(100vw - 28px)); max-height: min(650px, calc(100dvh - 110px)); display: flex; flex-direction: column; background: #fff; border: 1px solid #e6e9e2; border-radius: 22px; box-shadow: 0 20px 70px rgba(22,32,21,.16); color: #151a16; overflow: hidden; text-align: left; }
+.tt-notify-heading { display:flex; gap:16px; align-items:flex-start; justify-content:space-between; padding: 22px 22px 14px; }
+.tt-notify-eyebrow { color: #65705e; font-size: 10px; letter-spacing: 1.3px; font-weight: 800; }
+.tt-notify-heading h2 { margin: 6px 0 0; font-size: 26px; font-weight: 700; letter-spacing: -.05em; line-height: 1.2; }
+.tt-notify-heading h2 span { color: #84c13d; }
+.tt-notify-icon-button { display:grid; place-items:center; height:32px; width:32px; border:0; border-radius:50%; background:#f3f5f1; color:#2c322b; cursor:pointer; }
+.tt-notify-icon-button:hover { background:#e4efda; }
+.tt-notify-summary { display: flex; justify-content:space-between; align-items:center; padding: 0 22px 15px; font-size: 12px; font-weight: 700; color:#5c6a57; }
+.tt-notify-summary button { border:0; padding:5px; display:flex; align-items:center; gap:6px; background:transparent; color:#4b6040; font-size:11px; font-weight:700; cursor:pointer; }
+.tt-notify-summary button:hover { text-decoration:underline; }
+.tt-notify-items { overflow:auto; flex: 1; min-height: 0; border-top:1px solid #edf0e9; }
+.tt-notify-item { display:flex; gap:12px; padding: 16px 20px; border-bottom:1px solid #edf0e9; background:#fff; }
+.tt-notify-item--unread { background:#f6faef; }
+.tt-notify-dot { flex: 0 0 8px; height: 8px; margin-top: 7px; background:#8bc540; border-radius:50%; }
+.tt-notify-dot--read { background:#d5ddd0; }
+.tt-notify-item-content { min-width:0; flex:1; }
+.tt-notify-item-top { display:flex; justify-content:space-between; gap:10px; align-items:baseline; }
+.tt-notify-item-top strong { font-size:12px; font-weight:800; }
+.tt-notify-item-top time { color:#7c8579; font-size:10px; white-space:nowrap; }
+.tt-notify-item p { margin:7px 0 0; font-size:12px; line-height:1.55; color:#4f5b4e; overflow-wrap:anywhere; }
+.tt-notify-read { display:inline-flex; gap:5px; align-items:center; margin-top:10px; border:0; padding:0; background:transparent; color:#3b602a; font-size:11px; font-weight:800; cursor:pointer; }
+.tt-notify-read:hover { text-decoration:underline; }
+.tt-notify-read:disabled { opacity:.5; cursor:wait; }
+.tt-notify-error { margin:0 20px 12px; background:#fff0ed; border:1px solid #f6d9d0; border-radius:10px; padding:11px 12px; color:#b34436; font-size:12px; }
+.tt-notify-empty { min-height: 160px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; padding:24px; color:#788574; text-align:center; font-size:12px; }
+.tt-notify-empty strong { color:#293527; font-size:14px; }
+.tt-notify-footer { background: #f8f9f6; border-top:1px solid #edf0e9; padding: 11px 20px; color:#869080; font-size: 10px; }
+.tt-notify-spin { animation: tt-notify-spin .8s linear infinite; }
+@keyframes tt-notify-spin { to { transform: rotate(360deg); } }
+@media (max-width: 640px) {
+  .tt-notify-trigger { width: 39px; height: 39px; }
+  .tt-notify-panel { position: fixed; left: 12px; right: 12px; top: 76px; width: auto; max-height: calc(100dvh - 90px); }
+}
+
+/* Transient in-app notification; the backing notification remains in PostgreSQL. */
+.tt-notify-toast {
+  position: fixed;
+  top: 92px;
+  right: clamp(14px, 3vw, 45px);
+  z-index: 2000;
+  width: min(390px, calc(100vw - 28px));
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #dce9d0;
+  border-left: 4px solid #94c744;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 18px 52px rgba(26, 36, 25, .17);
+  color: #1d261a;
+  animation: tt-notify-appear .22s ease-out;
+}
+.tt-notify-toast-icon {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  border-radius: 12px;
+  background: #dbfcb5;
+  display: grid;
+  place-items: center;
+}
+.tt-notify-toast-content { flex: 1; min-width: 0; }
+.tt-notify-toast-content strong { display: block; font-size: 13px; font-weight: 800; }
+.tt-notify-toast-content p {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #4d5b49;
+  margin: 6px 0 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+.tt-notify-toast-content button {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #376021;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.tt-notify-toast-content button:hover { text-decoration: underline; }
+.tt-notify-toast-close {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  width: 27px;
+  height: 27px;
+  background: #f1f3ee;
+  color: #3f493e;
+  cursor: pointer;
+}
+.tt-notify-desktop-enable {
+  width: calc(100% - 40px);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 20px 13px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  border: 1px solid #dbe9cd;
+  background: #f1f8e9;
+  color: #345522;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+@keyframes tt-notify-appear {
+  from { opacity: 0; transform: translateY(-9px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 640px) {
+  .tt-notify-toast { top: 75px; right: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tt-notify-toast { animation: none; }
+}

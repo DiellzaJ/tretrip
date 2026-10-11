@@ -63,3 +63,6 @@ Thumbs.db
 # Miscellaneous
 *.log
 *.tmp
+
+# Local patch backups
+.security-patch-backups/

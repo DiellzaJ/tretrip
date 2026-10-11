@@ -1,0 +1,94 @@
+.tt-scheduler-inner { padding-top: 48px; }
+.tt-sch-intro { display:flex; justify-content:space-between; align-items:center; gap:24px; margin-bottom:28px; }
+.tt-sch-eyebrow, .tt-sch-booking-head > div > span, .tt-sch-list-heading > div > span {display:flex; align-items:center; gap:9px; color:#5d6257; font-size:10px; font-weight:800; letter-spacing:1.5px;}
+.tt-sch-dot {height:8px; width:8px; border-radius:50%; background:#98d245;}
+.tt-sch-intro h1 {font-size:clamp(36px, 4.4vw, 62px); margin:11px 0 8px; font-weight:650; letter-spacing:-.065em; line-height:1.08;}
+.tt-sch-intro h1 span, .tt-sch-booking-head h2 span {color:#88bf39;}
+.tt-sch-intro p {margin:0; color:#73786e; font-size:13px; line-height:1.7;}
+.tt-sch-new {display:inline-flex; align-items:center; gap:9px; background:#cbff79; border:none; border-radius:40px; padding:16px 21px; font-weight:750; font-size:13px; white-space:nowrap; transition:background .2s;}
+.tt-sch-new:hover {background:#b8f35b;}
+.tt-sch-summary {display:grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap:17px;}
+.tt-sch-stat {display:flex; flex-direction:column; justify-content:space-between; border:1px solid #e6e9e1; background:white; border-radius:18px; padding:24px; min-height:170px;}
+.tt-sch-stat > span:first-child {font-weight:800; letter-spacing:1.2px; font-size:10px; color:#65695d;}
+.tt-sch-stat strong {font-size:48px; font-weight:650; letter-spacing:-.08em; line-height:1.1;}
+.tt-sch-stat > span:last-child {display:flex; align-items:center; gap:8px; font-size:11px; color:#7c8277;}
+.tt-sch-stat--dark {background:#151914; color:white; border-color:#151914;}
+.tt-sch-stat--dark > span:first-child, .tt-sch-stat--dark > span:last-child {color:#ced5c8;}
+.tt-sch-booking {margin-top:34px; padding:29px; background:white; border:1px solid #e4e7df; border-radius:22px;}
+.tt-sch-booking-head {display:flex; align-items:end; justify-content:space-between; gap:24px; margin-bottom:26px;}
+.tt-sch-booking-head h2, .tt-sch-list-heading h2 {margin:9px 0 0; font-size:clamp(25px,3vw,36px); font-weight:650; letter-spacing:-.06em;}
+.tt-sch-booking-head p {font-size:12px; color:#888b84; margin:0 0 6px;}
+.tt-sch-booking-grid {display:grid; grid-template-columns:minmax(0,1.35fr) minmax(285px, .85fr); gap:24px;}
+.tt-sch-map-col {min-width:0;}
+.tt-sch-picker {display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;}
+.tt-sch-picker button {display:inline-flex; align-items:center; gap:8px; border:1px solid #dde2d8; background:#f6f7f3; color:#464b41; padding:11px 13px; border-radius:30px; font-size:12px; font-weight:650;}
+.tt-sch-picker button.selected {background:#cbff79; border-color:#a4dc50; color:#101b0c;}
+.tt-book-map {height:365px; width:100%; border-radius:15px; background:#dce4d6; z-index:0; overflow:hidden;}
+.tt-sch-map-note {font-size:10px; color:#8b9088; line-height:1.6; margin:9px 0 0;}
+.tt-sch-trip-form {display:flex; flex-direction:column; align-self:start; gap:0;}
+.tt-sch-trip-form label {font-size:12px; font-weight:750; margin:0 0 8px;}
+.tt-sch-trip-form input {width:100%; min-height:45px; border:1px solid #dfe3dc; border-radius:11px; background:#f9faf7; padding:10px 13px; margin:0 0 17px; font-size:12px; color:#1d211a;}
+.tt-sch-trip-form input:focus-visible {outline:2px solid #a5d952; outline-offset:1px;}
+.tt-sch-preview {padding:18px; background:#f1f5ea; border:1px solid #e4ebd8; border-radius:14px; display:flex; flex-direction:column; gap:6px;}
+.tt-sch-preview span {font-size:10px; font-weight:800; letter-spacing:1px; color:#526048;}
+.tt-sch-preview strong {font-weight:650; font-size:32px; letter-spacing:-.065em;}
+.tt-sch-preview p {font-size:12px; color:#424b3b; margin:0;}
+.tt-sch-preview small {font-size:10px; color:#7c8575; line-height:1.6;}
+.tt-sch-submit {display:inline-flex; justify-content:center; align-items:center; gap:10px; padding:15px 12px; margin-top:16px; border:0; border-radius:40px; background:#cbff79; font-size:13px; font-weight:750; color:#141514;}
+.tt-sch-submit:disabled {cursor:not-allowed; opacity:.55;}
+.tt-sch-list-section {margin-top:45px;}
+.tt-sch-list-heading {display:flex; align-items:end; justify-content:space-between; gap:20px; margin-bottom:18px;}
+.tt-sch-refresh {display:flex; align-items:center; gap:7px; border:1px solid #dfe4d9; background:white; border-radius:40px; padding:10px 15px; font-size:12px; font-weight:650;}
+.tt-sch-empty {min-height:160px; border:1px dashed #d4dbd1; background:white; border-radius:18px; color:#737b6d; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:9px; padding:24px; font-size:13px; text-align:center;}
+.tt-sch-empty h3 {font-size:18px; color:#1a1e16; margin:0;}
+.tt-sch-empty p {margin:0;}
+.tt-sch-trip-list {display:grid; gap:11px;}
+.tt-sch-trip-row {background:#fff; border:1px solid #e4e8df; padding:19px; border-radius:17px; display:flex; align-items:center; gap:17px;}
+.tt-sch-trip-symbol {height:49px; width:49px; flex:none; background:#eaffd0; display:grid; place-items:center; border-radius:13px; color:#263c1d;}
+.tt-sch-trip-main {flex:1; min-width:0; display:flex; flex-direction:column; align-items:flex-start; gap:7px;}
+.tt-sch-trip-meta {display:flex; align-items:center; gap:10px; font-size:10px; color:#747a6f; letter-spacing:.7px; font-weight:700;}
+.tt-sch-trip-main > strong {font-size:13px; font-weight:750; display:flex; align-items:center; gap:7px; flex-wrap:wrap; word-break:break-word;}
+.tt-sch-trip-detail {display:flex; align-items:center; gap:7px; flex-wrap:wrap; font-size:11px; color:#737c72;}
+.tt-sch-trip-driver {font-size:11px; color:#627159;}
+.tt-sch-trip-side {display:flex; align-items:flex-end; flex-direction:column; gap:5px; flex:none;}
+.tt-sch-trip-side strong {font-size:18px; font-weight:750;}
+.tt-sch-trip-side small {font-size:11px; color:#858d80;}
+.tt-sch-trip-side button {margin-top:8px; border:1px solid #dce1d9; background:#fff; padding:7px 11px; border-radius:30px; font-size:11px; font-weight:700;}
+.tt-trip-status {border-radius:30px; background:#eceeea; padding:4px 8px; font-size:10px; font-weight:750; letter-spacing:0; color:#5d615b;}
+.tt-trip-status--assigned, .tt-trip-status--completed, .tt-trip-status--arrived {background:#e1f9ce; color:#397624;}
+.tt-trip-status--pending {background:#fff4d9; color:#96620e;}
+.tt-trip-status--inprogress {background:#e2eeff; color:#2c5fa9;}
+.tt-trip-status--expired, .tt-trip-status--cancelled {background:#f7eaea; color:#9b4b4b;}
+.tt-sch-alert {padding:13px 16px; margin:14px 0; background:#effbdc; border-radius:12px; color:#385923; font-size:12px; border:1px solid #d4e8c6;}
+.tt-sch-alert--error {background:#fff2ef; border-color:#f3d3ca; color:#a43b25;}
+@media(max-width:850px){
+ .tt-sch-booking-grid {grid-template-columns:1fr;}
+ .tt-sch-summary {gap:10px;}
+ .tt-sch-stat {padding:17px; min-height:140px;}
+ .tt-sch-stat strong {font-size:36px;}
+}
+@media(max-width:600px){
+ .tt-sch-intro {align-items:flex-start;flex-direction:column;}
+ .tt-sch-summary {grid-template-columns:1fr;}
+ .tt-sch-stat {min-height:110px;}
+ .tt-sch-booking {padding:16px;}
+ .tt-sch-booking-head {align-items:flex-start;flex-direction:column;gap:8px;}
+ .tt-book-map {height:310px;}
+ .tt-sch-trip-row {align-items:flex-start;flex-wrap:wrap;}
+ .tt-sch-trip-side {margin-left:auto;}
+}
+
+/* Finished trips have their own compact history below active bookings. */
+.tt-sch-history-section { margin-top: 52px; padding-bottom: 22px; }
+.tt-sch-history-list { background:#fff; border:1px solid #e4e9df; border-radius:18px; overflow:hidden; }
+.tt-sch-history-row { display:flex; align-items:center; gap:15px; padding:17px 20px; border-bottom:1px solid #ebefea; font-size:12px; }
+.tt-sch-history-row:last-child { border-bottom:0; }
+.tt-sch-history-id { font-weight:800; color:#63775c; flex:none; }
+.tt-sch-history-route { display:flex; align-items:center; gap:8px; flex:1; min-width:0; overflow-wrap:anywhere; }
+.tt-sch-history-route svg { flex:none; }
+.tt-sch-history-date { font-size:11px; color:#898e88; white-space:nowrap; }
+@media (max-width:650px) {
+ .tt-sch-history-row { flex-wrap:wrap; }
+ .tt-sch-history-date { margin-left:auto; }
+ .tt-sch-history-route { flex-basis:100%; order:3; }
+}

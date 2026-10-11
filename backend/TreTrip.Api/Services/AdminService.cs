@@ -1,4 +1,3 @@
-
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TreTrip.Api.Data;
@@ -37,6 +36,15 @@ public class AdminService : IAdminService
                 "Invalid employee information.");
         }
 
+        if (!email.EndsWith(
+            "@tretek.io",
+            StringComparison.OrdinalIgnoreCase))
+        {
+            throw new ArgumentException(
+                "Only Tretek employees with a @tretek.io email can be registered as Schedulers."
+            );
+        }
+
         // Check if the email is already registered
         var emailExists = await _db.Users
             .AnyAsync(u => u.Email.ToLower() == email);
@@ -57,7 +65,8 @@ public class AdminService : IAdminService
             FullName = fullName,
             Email = email,
             RoleId = role.Id,
-            IsActive = true
+            IsActive = true,
+            MustChangePassword = true
         };
 
         // Hash the password before saving

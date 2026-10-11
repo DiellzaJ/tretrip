@@ -389,10 +389,22 @@ public class TripService : ITripService
             return CancelTripResult.InvalidStatus;
         }
 
+        // Notify the assigned driver too, if the booking is cancelled.
+        int? driverUserId = trip.DriverId.HasValue
+            ? await _db.Drivers
+                .Where(d => d.Id == trip.DriverId.Value)
+                .Select(d => (int?)d.UserId)
+                .SingleOrDefaultAsync()
+            : null;
+
         trip.Status = "Cancelled";
 
         await _db.SaveChangesAsync();
         await transaction.CommitAsync();
+
+        await _realtimeSender.NotifyUserAsync(schedulerId);
+        if (driverUserId.HasValue)
+            await _realtimeSender.NotifyUserAsync(driverUserId.Value);
 
         return CancelTripResult.Cancelled;
     }

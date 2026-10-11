@@ -237,6 +237,8 @@ public class DriverTripService : IDriverTripService
         await _db.SaveChangesAsync();
         await transaction.CommitAsync();
 
+        // The scheduler can update their open dashboard without a manual refresh.
+        await _realtimeSender.NotifyUserAsync(trip.SchedulerId);
         return DriverTripActionResult.Success;
     }
 
@@ -278,6 +280,7 @@ public class DriverTripService : IDriverTripService
         await _db.SaveChangesAsync();
         await transaction.CommitAsync();
 
+        await _realtimeSender.NotifyUserAsync(trip.SchedulerId);
         return DriverTripActionResult.Success;
     }
 }

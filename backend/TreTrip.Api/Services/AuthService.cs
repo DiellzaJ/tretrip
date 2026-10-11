@@ -89,7 +89,8 @@ public class AuthService : IAuthService
             UserId = user.Id,
             FullName = user.FullName,
             Email = user.Email,
-            Role = user.Role.Name
+            Role = user.Role.Name,
+            MustChangePassword = user.MustChangePassword
         };
     }
 }

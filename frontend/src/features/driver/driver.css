@@ -1,0 +1,59 @@
+.tt-driver-inner {padding-top:48px; padding-bottom:72px;}
+.tt-driver-intro {display:flex; justify-content:space-between; align-items:center; gap:24px; margin-bottom:27px;}
+.tt-driver-eyebrow {display:inline-flex; align-items:center; gap:9px; color:#667061; font-size:10px; font-weight:800; letter-spacing:1.4px;}
+.tt-driver-dot {width:8px; height:8px; background:#90c94a; border-radius:50%;}
+.tt-driver-intro h1 {font-size:clamp(36px,4.4vw,60px); font-weight:650; letter-spacing:-.065em; line-height:1.1; margin:12px 0 9px;}
+.tt-driver-intro h1 span {color:#8cc247;}
+.tt-driver-intro p {margin:0; font-size:13px; color:#777c74; line-height:1.75;}
+.tt-driver-refresh {display:inline-flex; align-items:center; gap:9px; padding:13px 18px; background:#fff; border:1px solid #e1e5dd; border-radius:40px; font-size:12px; font-weight:700;}
+.tt-driver-refresh:disabled {opacity:.6;}
+.tt-driver-spin {animation:ttDriverSpin 1s linear infinite;}
+@keyframes ttDriverSpin {to {transform:rotate(360deg);}}
+.tt-driver-alert {padding:14px 17px; background:#effbdc; color:#365821; border:1px solid #d7eabf; border-radius:14px; font-size:12px; margin:0 0 18px;}
+.tt-driver-alert--error {background:#fff1ec; color:#a1452c; border-color:#edcfc3;}
+.tt-driver-stats {display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:17px;}
+.tt-driver-stat {display:flex; flex-direction:column; justify-content:space-between; padding:25px; min-height:170px; background:#fff; border:1px solid #e6e9e1; border-radius:18px;}
+.tt-driver-stat > span {font-size:10px; font-weight:800; letter-spacing:1.25px; color:#65695f;}
+.tt-driver-stat strong {font-size:49px; letter-spacing:-.075em; font-weight:650; line-height:1.1;}
+.tt-driver-stat small {display:flex; align-items:center; gap:8px; color:#7c857b; font-size:11px;}
+.tt-driver-stat--dark {background:#151914; border-color:#151914; color:#fff;}
+.tt-driver-stat--dark > span,.tt-driver-stat--dark small {color:#d0d6cb;}
+.tt-driver-section {margin-top:46px;}
+.tt-driver-section-head {display:flex; align-items:end; justify-content:space-between; gap:16px; margin-bottom:19px;}
+.tt-driver-section-head h2 {font-size:clamp(25px,3vw,36px); font-weight:650; letter-spacing:-.06em; margin:10px 0 0;}
+.tt-driver-section-note {font-size:11px; color:#8a9086;}
+.tt-driver-empty {display:flex; flex-direction:column; align-items:center; justify-content:center; gap:11px; text-align:center; padding:45px 20px; min-height:170px; border-radius:19px; background:#fff; border:1px dashed #d7ddd3; color:#777f73; font-size:13px;}
+.tt-driver-empty strong {color:#151914; font-weight:750; font-size:17px;}
+.tt-driver-trip-grid {display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,375px),1fr)); gap:17px;}
+.tt-driver-trip {border:1px solid #e3e8df; background:#fff; border-radius:20px; padding:24px; min-width:0;}
+.tt-driver-trip-heading {display:flex; align-items:center; justify-content:space-between; gap:12px;}
+.tt-driver-trip-number {display:flex; align-items:center; gap:11px; font-size:12px; font-weight:750; letter-spacing:1px;}
+.tt-driver-trip-icon {display:grid; place-items:center; width:39px; height:39px; background:#eaffd2; border-radius:12px;}
+.tt-driver-stops {margin:27px 0 20px;}
+.tt-driver-stop {display:flex; align-items:start; gap:14px;}
+.tt-driver-stop > div {display:flex; flex-direction:column; gap:6px; min-width:0;}
+.tt-driver-stop small {font-size:10px; color:#8d9288; font-weight:800; letter-spacing:1px;}
+.tt-driver-stop strong {font-size:14px; font-weight:700; overflow-wrap:anywhere; line-height:1.45;}
+.tt-driver-origin-dot {flex:none; background:#b9ef62; width:15px; height:15px; border:4px solid #36562b; border-radius:50%; margin:3px 2px;}
+.tt-driver-stop-line {border-left:1px dashed #c6d4b9; height:22px; margin:5px 0 5px 9px;}
+.tt-driver-target-icon {flex:none; color:#457d29; margin:2px 0 0;}
+.tt-driver-trip-details {display:flex; gap:13px 20px; flex-wrap:wrap; padding:18px 0; border-top:1px solid #eaeee7; border-bottom:1px solid #eaeee7;}
+.tt-driver-trip-details span {display:flex; align-items:center; gap:7px; color:#727a70; font-size:11px;}
+.tt-driver-directions {display:inline-flex; align-items:center; gap:7px; margin-top:14px; color:#477724; font-size:12px; font-weight:700; text-decoration:none;}
+.tt-driver-directions:hover {text-decoration:underline;}
+.tt-driver-trip-actions {display:flex; gap:11px; margin-top:20px; flex-wrap:wrap;}
+.tt-driver-trip-actions button {display:inline-flex; align-items:center; justify-content:center; gap:8px; flex:1; padding:13px 15px; border-radius:40px; font-size:12px; font-weight:750; white-space:nowrap;}
+.tt-driver-secondary {background:white; border:1px solid #dce4d5; color:#252925;}
+.tt-driver-primary {background:#cbff79; border:1px solid #cbff79; color:#141514;}
+.tt-driver-trip-actions button:disabled {opacity:.44; cursor:not-allowed;}
+.tt-driver-time-help {font-size:11px; color:#9a7b4b; line-height:1.6; margin:12px 0 0;}
+.tt-driver-history-list {background:#fff; border:1px solid #e4e9df; border-radius:18px; overflow:hidden;}
+.tt-driver-history-empty {padding:26px; background:#fff; border:1px solid #e4e9df; border-radius:18px; font-size:12px; color:#818781;}
+.tt-driver-history-row {display:flex; align-items:center; gap:15px; padding:17px 20px; border-bottom:1px solid #ebefea; font-size:12px;}
+.tt-driver-history-row:last-child {border-bottom:0;}
+.tt-driver-history-id {font-weight:800; color:#63775c; flex:none;}
+.tt-driver-history-route {display:flex; align-items:center; gap:8px; flex:1; min-width:0; overflow-wrap:anywhere;}
+.tt-driver-history-date {font-size:11px; color:#898e88; white-space:nowrap;}
+@media (max-width:850px) {.tt-driver-stats {gap:10px;} .tt-driver-stat {padding:18px; min-height:145px;} .tt-driver-stat strong {font-size:37px;}}
+@media (max-width:650px) {.tt-driver-intro {align-items:flex-start; flex-direction:column;} .tt-driver-stats {grid-template-columns:1fr;} .tt-driver-stat {min-height:110px;} .tt-driver-section-note {display:none;} .tt-driver-trip {padding:17px;} .tt-driver-history-row {flex-wrap:wrap;} .tt-driver-history-date {margin-left:auto;} .tt-driver-history-route {flex-basis:100%; order:3;} }
+@media (prefers-reduced-motion:reduce) {.tt-driver-spin {animation:none;}}

@@ -1,5 +1,6 @@
 
 using System.Text;
+using System.Security.Claims;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -27,6 +28,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Authentication and Admin services
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAccountSecurityService, AccountSecurityService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<ITaxiCompanyService, TaxiCompanyService>();
@@ -53,6 +55,16 @@ builder.Services.AddRateLimiter(options =>
             {
                 PermitLimit = 10,
                 Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0,
+                AutoReplenishment = true
+            }));
+    options.AddPolicy("password-recovery", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 3,
+                Window = TimeSpan.FromMinutes(15),
                 QueueLimit = 0,
                 AutoReplenishment = true
             }));
@@ -90,6 +102,36 @@ builder.Services.AddAuthentication(
 
         options.Events = new JwtBearerEvents
         {
+            OnTokenValidated = async context =>
+            {
+                var idClaim = context.Principal?.FindFirstValue(ClaimTypes.NameIdentifier);
+                var versionClaim = context.Principal?.FindFirstValue("pwd_ver");
+                if (!int.TryParse(idClaim, out var userId) ||
+                    !int.TryParse(versionClaim, out var tokenVersion))
+                {
+                    context.Fail("Invalid password version.");
+                    return;
+                }
+
+                var db = context.HttpContext.RequestServices.GetRequiredService<AppDbContext>();
+                var userState = await db.Users.AsNoTracking()
+                    .Where(u => u.Id == userId)
+                    .Select(u => new { u.IsActive, u.PasswordVersion, u.MustChangePassword })
+                    .SingleOrDefaultAsync();
+
+                if (userState == null || !userState.IsActive ||
+                    userState.PasswordVersion != tokenVersion)
+                {
+                    context.Fail("Account disabled or token revoked.");
+                    return;
+                }
+
+                if (userState.MustChangePassword &&
+                    !context.Request.Path.StartsWithSegments("/api/auth/change-password"))
+                {
+                    context.Fail("Password change required.");
+                }
+            },
             OnMessageReceived = context =>
             {
                 var accessToken =

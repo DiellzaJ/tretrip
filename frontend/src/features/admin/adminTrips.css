@@ -1,0 +1,40 @@
+.tt-trip-analytics{margin-top:35px}
+.tt-trip-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin:0 0 19px}
+.tt-trip-heading h2{font-size:clamp(26px,3.2vw,41px);font-weight:650;line-height:1.1;letter-spacing:-.055em;margin:9px 0 7px}
+.tt-trip-heading h2 span,.tt-admin-trip-panel h2 span{color:#82b93c}
+.tt-trip-heading p,.tt-admin-trip-panel .tt-admin-section-head p{margin:0;color:#758071;font-size:12px;line-height:1.6}
+.tt-trip-metrics{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:13px;margin-bottom:17px}
+.tt-trip-metrics article{padding:23px 25px;min-height:145px;display:flex;flex-direction:column;background:white;border:1px solid #e5e9e1;border-radius:18px}
+.tt-trip-metrics article span{font-size:10px;color:#70776c;letter-spacing:1px;font-weight:800}
+.tt-trip-metrics article strong{font-size:clamp(30px,3vw,46px);font-weight:650;letter-spacing:-.055em;margin:auto 0 4px;white-space:nowrap}
+.tt-trip-metrics article small{font-size:11px;color:#889186}
+.tt-trip-metrics .tt-trip-metric-green{background:#d6f5af;border-color:#d6f5af}
+.tt-trip-metrics .tt-trip-metric-green span,.tt-trip-metrics .tt-trip-metric-green small{color:#425339}
+.tt-trip-summary-table{min-width:770px}
+.tt-trip-route{max-width:340px;line-height:1.6}
+.tt-trip-route svg{vertical-align:middle;display:inline;margin:0 5px;flex-shrink:0}
+.tt-trip-latest-header{margin-top:30px;margin-bottom:13px}
+.tt-trip-latest-header h3{margin:5px 0;font-size:24px;letter-spacing:-.04em}
+.tt-trip-recent-table{min-width:790px}
+.tt-trip-filterbar{display:grid;grid-template-columns:1fr .7fr 1.25fr;gap:13px;margin:20px 0 17px}
+.tt-trip-filterbar label{display:flex;flex-direction:column;gap:8px;font-size:11px;font-weight:800;color:#50594d}
+.tt-trip-filterbar select,.tt-trip-filterbar input{height:45px;min-width:0;padding:0 13px;border:1px solid #dfe5dc;border-radius:10px;background:white;color:#1a2118;font:inherit;font-weight:550;font-size:12px;outline:none}
+.tt-trip-filterbar select:focus,.tt-trip-filterbar input:focus{border-color:#82b93c}
+.tt-trip-search span{display:flex;align-items:center;border:1px solid #dfe5dc;border-radius:10px;padding-left:12px;background:white;color:#838f7d}
+.tt-trip-search span input{border:0;flex:1;width:100%}
+.tt-trip-mini-stats{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:0 0 20px}
+.tt-trip-mini-stats>span{display:flex;align-items:center;gap:7px;padding:10px 14px;border-radius:30px;background:white;border:1px solid #e2e8dd;color:#5e6957;font-size:11px}
+.tt-trip-mini-stats strong{color:#1a2118;font-weight:800}
+.tt-trip-details-table{min-width:1180px}
+.tt-trip-route-cell{max-width:310px}
+.tt-trip-route-cell>strong{font-weight:650!important;font-size:12px!important;line-height:1.4}
+.tt-trip-destination{display:flex;align-items:center;gap:8px;margin-top:8px;color:#687265;line-height:1.5;overflow-wrap:anywhere}
+.tt-trip-destination svg{flex-shrink:0;color:#83b84f}
+.tt-trip-status{display:inline-flex;align-items:center;white-space:nowrap;padding:7px 11px;border-radius:22px;font-size:11px;font-weight:750}
+.tt-trip-status--done{background:#e3f7d5;color:#367433}
+.tt-trip-status--off{background:#f9eaea;color:#a54d49}
+.tt-trip-status--progress{background:#dff0fa;color:#265c87}
+.tt-trip-status--pending{background:#f3f3e2;color:#6a7240}
+.tt-trip-muted{color:#8c938b}
+@media(max-width:780px){.tt-trip-metrics{grid-template-columns:1fr 1fr}.tt-trip-metric-green{grid-column:span 2}.tt-trip-filterbar{grid-template-columns:1fr 1fr}.tt-trip-search{grid-column:span 2}}
+@media(max-width:490px){.tt-trip-heading{align-items:flex-start;flex-direction:column}.tt-trip-metrics article{padding:17px;min-height:125px}.tt-trip-metrics article strong{font-size:30px}}

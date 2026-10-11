@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TreTrip.Api.Models;
 using TreTrip.Api.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace TreTrip.Api.Tests;
 
@@ -48,6 +49,15 @@ public sealed class AuthorizationApiFactory
 
             if (worker != null)
                 services.Remove(worker);
+
+            services.PostConfigure<JwtBearerOptions>(
+                JwtBearerDefaults.AuthenticationScheme,
+                options =>
+                {
+                    options.Events.OnTokenValidated =
+                        _ => Task.CompletedTask;
+                });
+
         });
     }
 

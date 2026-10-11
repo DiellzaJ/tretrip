@@ -1,0 +1,18 @@
+.security-page{min-height:100vh;display:grid;place-items:center;padding:36px 18px;background:#ecede9;color:#151713;font-family:Manrope,Inter,system-ui,sans-serif}
+.security-panel{width:min(100%,490px);background:#fff;border:1px solid #e1e5dc;border-radius:26px;padding:clamp(24px,5vw,48px);box-shadow:0 15px 50px #181b1810}
+.security-brand{display:inline-block;color:#141814;font-size:23px;font-weight:800;letter-spacing:-1.1px;text-decoration:none;margin-bottom:36px}
+.security-brand span,.security-panel h1 span{color:#8ac33e}
+.security-tag{display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:1.4px;color:#66745b;font-weight:800}
+.security-panel h1{font-size:clamp(30px,5vw,44px);font-weight:650;letter-spacing:-2px;line-height:1.12;margin:15px 0}
+.security-panel>p{font-size:14px;line-height:1.7;color:#667060;margin-bottom:25px}
+.security-form{display:flex;flex-direction:column;gap:17px;margin-top:24px}
+.security-form label{display:flex;flex-direction:column;gap:8px;font-size:13px;font-weight:700;color:#222820}
+.security-form input{height:50px;border:1px solid #d8dfd3;border-radius:12px;padding:0 15px;background:#f8f9f6;color:#141614;font-size:15px;outline:none}
+.security-form input:focus{border-color:#84b83d;box-shadow:0 0 0 3px #d6fbac77}
+.security-note{display:flex;gap:8px;align-items:center;color:#68735e;font-size:12px;line-height:1.5}
+.security-submit{border:0;border-radius:50px;background:#caff80;color:#162013;display:flex;align-items:center;justify-content:space-between;padding:15px 19px;font-weight:800;font-size:15px;cursor:pointer;min-height:51px}
+.security-submit:disabled{opacity:.55;cursor:wait}
+.security-error{background:#fff1ee;color:#ae463a;padding:14px;border-radius:12px;font-size:13px}
+.security-success{background:#effbdc;color:#2a5b21;padding:15px;border-radius:12px;font-size:14px;line-height:1.5;margin-top:18px}
+.security-back{display:inline-block;margin-top:23px;font-size:13px;font-weight:650;color:#4b6240;text-decoration:none}
+.security-back:hover{text-decoration:underline}

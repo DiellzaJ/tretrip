@@ -97,7 +97,8 @@ public class DriverService : IDriverService
             FullName = fullName,
             Email = email,
             RoleId = role.Id,
-            IsActive = true
+            IsActive = true,
+            MustChangePassword = true
         };
 
         // Secure password hashing

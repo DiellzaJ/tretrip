@@ -134,7 +134,7 @@ export default function SchedulerDashboard({ user, onLogout }: {
   const [error, setError] = useState("");
 
   const refreshTrips = useCallback(async (initial = false) => {
-    if (initial) setLoadingTrips(true);
+    // Initial loading is already true in useState; updates follow the async fetch.
     try {
       const result = await getMyTrips(user.accessToken);
       setTrips(result);
@@ -147,9 +147,12 @@ export default function SchedulerDashboard({ user, onLogout }: {
   }, [user.accessToken]);
 
   useEffect(() => {
-    void refreshTrips(true);
+    const initialFetch = window.setTimeout(() => void refreshTrips(true), 0);
     const interval = window.setInterval(() => void refreshTrips(), 15_000);
-    return () => window.clearInterval(interval);
+    return () => {
+      window.clearTimeout(initialFetch);
+      window.clearInterval(interval);
+    };
   }, [refreshTrips]);
 
   const onNotificationsUpdated = useCallback(() => {
@@ -244,7 +247,7 @@ export default function SchedulerDashboard({ user, onLogout }: {
         <Brand />
         <div className="tt-header-actions">
           <span className="tt-header-role">SCHEDULER WORKSPACE</span>
-          <NotificationsBell accessToken={user.accessToken} refreshVersion={notificationsRevision} />
+          <NotificationsBell key={user.accessToken} accessToken={user.accessToken} refreshVersion={notificationsRevision} />
           <span className="tt-user-avatar">{user.fullName.trim().charAt(0).toUpperCase() || "T"}</span>
           <button type="button" className="tt-logout" onClick={onLogout}><LogOut size={16}/> <span>Log out</span></button>
         </div>

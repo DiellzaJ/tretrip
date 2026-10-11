@@ -35,17 +35,8 @@ export default function NotificationsBell({ accessToken, refreshVersion }: Props
   const knownIds = useRef<Set<number>>(new Set());
   const initialNotificationsLoaded = useRef(false);
 
-  // Never show another user's old notifications when the logged-in account changes.
-  useEffect(() => {
-    requestId.current += 1;
-    knownIds.current = new Set();
-    initialNotificationsLoaded.current = false;
-    setNotifications([]);
-    setToast(null);
-    setOpen(false);
-    setLoading(true);
-    setError("");
-  }, [accessToken]);
+  // Parent uses accessToken as this component's key. Changing accounts remounts
+  // the bell and resets all state and refs without state updates inside an effect.
 
   const refresh = useCallback(async () => {
     const id = ++requestId.current;

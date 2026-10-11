@@ -181,15 +181,11 @@ function App() {
   useEffect(() => {
     if (!user) return;
     const timeLeft = Date.parse(user.expiresAt) - Date.now();
-    if (timeLeft <= 0) {
-      setUser(null);
-      sessionStorage.removeItem(SESSION_KEY);
-      return;
-    }
+    // Schedule expiry cleanup rather than synchronously setting state in an effect.
     const timeout = window.setTimeout(() => {
       sessionStorage.removeItem(SESSION_KEY);
       setUser(null);
-    }, timeLeft);
+    }, Math.max(0, timeLeft));
     return () => window.clearTimeout(timeout);
   }, [user]);
 

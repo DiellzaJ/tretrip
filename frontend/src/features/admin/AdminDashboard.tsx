@@ -59,7 +59,8 @@ export default function AdminDashboard({ user, onLogout }: { user: LoginResponse
   const [notice, setNotice] = useState("");
 
   const refresh = useCallback(async (initial = false) => {
-    if (initial) setLoading(true); else setRefreshing(true);
+    // Initial loading is already true in useState; avoid synchronous effect updates.
+    if (!initial) setRefreshing(true);
     try {
       const [newUsers, newCompanies, newDrivers, newVehicles, newTrips] = await Promise.all([
         adminApi.getUsers(user.accessToken),
@@ -82,7 +83,10 @@ export default function AdminDashboard({ user, onLogout }: { user: LoginResponse
     }
   }, [user.accessToken]);
 
-  useEffect(() => { void refresh(true); }, [refresh]);
+  useEffect(() => {
+    const initialFetch = window.setTimeout(() => void refresh(true), 0);
+    return () => window.clearTimeout(initialFetch);
+  }, [refresh]);
 
   async function execute(key: string, work: () => Promise<unknown>, success: string, reportErrorToModal = false) {
     if (working) return false;

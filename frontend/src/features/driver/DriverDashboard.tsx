@@ -38,11 +38,11 @@ export default function DriverDashboard({ user, onLogout }: {
   const [busyTripId, setBusyTripId] = useState<number | null>(null);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-  const [now, setNow] = useState(Date.now());
+  const [now, setNow] = useState(0); // Set by a clock timer after mount.
 
   const refreshTrips = useCallback(async (initial = false) => {
-    if (initial) setLoading(true);
-    else setRefreshing(true);
+    // Initial loading is already true in useState; avoid synchronous effect updates.
+    if (!initial) setRefreshing(true);
     try {
       const result = await getDriverTrips(user.accessToken);
       setTrips(result);
@@ -56,10 +56,17 @@ export default function DriverDashboard({ user, onLogout }: {
   }, [user.accessToken]);
 
   useEffect(() => {
-    void refreshTrips(true);
+    const initialFetch = window.setTimeout(() => void refreshTrips(true), 0);
     const poll = window.setInterval(() => void refreshTrips(), 15_000);
+    // Synchronize once after mount, then recheck time-based actions every 30s.
+    const initialClock = window.setTimeout(() => setNow(Date.now()), 0);
     const clock = window.setInterval(() => setNow(Date.now()), 30_000);
-    return () => { window.clearInterval(poll); window.clearInterval(clock); };
+    return () => {
+      window.clearTimeout(initialFetch);
+      window.clearInterval(poll);
+      window.clearTimeout(initialClock);
+      window.clearInterval(clock);
+    };
   }, [refreshTrips]);
 
   const onNotificationsUpdated = useCallback(() => {
@@ -99,7 +106,7 @@ export default function DriverDashboard({ user, onLogout }: {
         <Brand />
         <div className="tt-header-actions">
           <span className="tt-header-role">DRIVER WORKSPACE</span>
-          <NotificationsBell accessToken={user.accessToken} refreshVersion={notificationsRevision} />
+          <NotificationsBell key={user.accessToken} accessToken={user.accessToken} refreshVersion={notificationsRevision} />
           <span className="tt-user-avatar" aria-label={user.fullName}>{firstName.charAt(0).toUpperCase()}</span>
           <button type="button" className="tt-logout" onClick={onLogout}><LogOut size={16}/> <span>Log out</span></button>
         </div>

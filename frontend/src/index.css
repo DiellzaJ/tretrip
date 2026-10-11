@@ -47,7 +47,14 @@ a { color: inherit; }
 .tt-hero-title { position: relative; z-index: 2; margin: clamp(58px, 10vh, 115px) 0 0; font-size: clamp(53px, 5.2vw, 81px); letter-spacing: -.065em; font-weight: 600; line-height: 1.075; max-width: 740px; }
 .tt-hero-title span { color: #82bc38; }
 .tt-taxi-stage { width: 100%; margin: auto 0 0; padding-top: clamp(30px, 5vh, 55px); display: flex; align-items: flex-end; justify-content: center; background: transparent; border: 0; border-radius: 0; box-shadow: none; overflow: visible; min-height: 0; }
-.tt-taxi-image { display: block; width: min(100%, 790px); height: auto; max-height: min(49vh, 440px); object-fit: contain; object-position: center bottom; }
+.tt-taxi-image {
+  display: block;
+  width: min(100%, 920px);
+  height: min(60vh, 570px);
+  max-height: none;
+  object-fit: contain;
+  object-position: center bottom;
+}
 .tt-auth-panel { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 56px clamp(40px, 5.5vw, 90px); background: #fff; }
 .tt-auth-mobile-brand { display: none; }
 .tt-auth-card { width: 100%; max-width: 415px; }
